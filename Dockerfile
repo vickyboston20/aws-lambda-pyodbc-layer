@@ -22,9 +22,10 @@ RUN curl ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-${UNIXODBC_VERSION}.tar.gz
     make && make install && \
     cd .. && rm -rf unixODBC-${UNIXODBC_VERSION}.tar.gz unixODBC-${UNIXODBC_VERSION}
 
-# Download and install Microsoft ODBC driver for SQL Server
+# Download and install Microsoft ODBC driver for SQL Server (using dnf or yum fallback)
 RUN curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
-    ACCEPT_EULA=Y dnf install -y msodbcsql${MSODBC_VERSION}
+    ACCEPT_EULA=Y (dnf install -y msodbcsql${MSODBC_VERSION}) || \
+    (yum install -y msodbcsql${MSODBC_VERSION})
 
 # Configure ODBC
 RUN echo "[ODBC Driver ${MSODBC_VERSION} for SQL Server]" > /opt/odbcinst.ini && \
