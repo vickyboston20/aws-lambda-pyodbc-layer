@@ -44,8 +44,8 @@ jobs:
       - name: Upload PyODBC layer zip as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip
-          path: ./pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip
+          name: pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}
+          path: pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip
 
   release:
     needs: build
@@ -61,12 +61,15 @@ jobs:
       - name: Download built artifacts
         uses: actions/download-artifact@v4
         with:
-          path: ./artifacts
+          path: pyodbc-layer
+          pattern: pyodbc-layer-*
+          merge-multiple: true
+      - run: ls -R pyodbc-layer
 
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "./artifacts/*.zip"
+          artifacts: "pyodbc-layer"
         # env:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
