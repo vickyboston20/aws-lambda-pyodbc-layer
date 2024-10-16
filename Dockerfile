@@ -10,10 +10,9 @@ ARG UNIXODBC_VERSION
 ENV ODBCINI=/opt/odbc.ini
 ENV ODBCSYSINI=/opt
 
-# Install necessary build dependencies
-RUN dnf install -y \
-    gcc gcc-c++ make automake autoconf libtool bison flex \
-    openssl-devel zlib-devel glibc-devel tar gzip
+# Install necessary build dependencies (using dnf or yum fallback)
+RUN (dnf install -y gcc gcc-c++ make automake autoconf libtool bison flex openssl-devel zlib-devel glibc-devel tar gzip) || \
+    (yum install -y gcc gcc-c++ make automake autoconf libtool bison flex openssl-devel zlib-devel glibc-devel tar gzip)
 
 # Download and build unixODBC
 RUN curl ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-${UNIXODBC_VERSION}.tar.gz -O && \
