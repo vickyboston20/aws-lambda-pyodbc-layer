@@ -7,16 +7,16 @@ This repository provides a framework for building AWS Lambda layers that enable 
 ## Features
 - **Version-Specific Artifacts**: Each layer is built for a specific combination of [Python](https://gallery.ecr.aws/lambda/python) (3.9, 3.10, 3.11, 3.12) and [Microsoft ODBC driver versions](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server) (18, 17, 13.1, 13, 11).
 
-- **Automated Builds**: The GitHub Actions workflow automates the process of building and packaging the layers, making it easy for developers to access the latest versions without manual setup
+- **Automated Builds**: The GitHub Actions workflow automates the process of building and packaging the layers, making it easy for developers to access the latest versions without manual setup.
 
 - **Easy Layer Integration**: Developers can download the zip files and integrate them into their Lambda functions effortlessly.
 
 ## Acknowledgments
-- This layer utilizes the pyodbc library, maintained by the open-source community. More information can be found at the [pyodbc GitHub repository](https://github.com/mkleehammer/pyodbc).
+- This layer utilizes the ```pyodbc``` library, maintained by the open-source community. More information can be found at the [pyodbc GitHub repository](https://github.com/mkleehammer/pyodbc).
 - The Microsoft ODBC Driver for SQL Server is developed and maintained by Microsoft. Refer to the official [Microsoft documentation](https://learn.microsoft.com/en-us/sql/connect/python/pyodbc/python-sql-driver-pyodbc) for installation instructions and driver information.
 
 ## License
-This project is licensed under the [GNU License](LICENSE). Feel free to use, modify, and distribute this project in accordance with the terms of the license.
+This project is licensed under the [GNU General Public License v3.0](LICENSE). Feel free to use, modify, and distribute this project in accordance with the terms of the license.
 
 ## Contributions
 Contributions are welcome! If you have suggestions for improvements or find any issues, please open an issue or submit a pull request.
