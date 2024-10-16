@@ -1,0 +1,67 @@
+name: Build and Release AWS Lambda Layer for PyODBC
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python_version: [3.12]
+        msodbc_version: [17]
+        unixodbc_version: [2.3.12]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image for AWS Lambda layer
+        run: |
+          docker build \
+            --build-arg LAMBDA_BASE_IMAGE=public.ecr.aws/lambda/python:${{ matrix.python_version }} \
+            --build-arg MSODBC_VERSION=${{ matrix.msodbc_version }} \
+            --build-arg UNIXODBC_VERSION=${{ matrix.unixodbc_version }} \
+            -t pyodbc-lambda-layer:${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }} .
+
+      - name: Create Container and Copy Artifacts
+        run: |
+          CONTAINER_ID=$(docker create pyodbc-lambda-layer:${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }})
+          docker cp $CONTAINER_ID:/opt/pyodbc-layer.zip ./pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip
+          docker rm $CONTAINER_ID
+
+      - name: Upload PyODBC layer zip as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip
+          path: ./pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download built artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./artifacts/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
