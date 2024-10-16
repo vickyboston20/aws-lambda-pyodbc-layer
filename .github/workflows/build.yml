@@ -70,12 +70,3 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "pyodbc-layer/pyodbc-layer*.zip"
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    #   - name: Create GitHub Release
-    #     uses: softprops/action-gh-release@v1
-    #     with:
-    #       files: ${{ github.workspace }}/artifacts/pyodbc-layer-3.12-mssql17-unixODBC2.3.12.zip
-    #     env:
-    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
