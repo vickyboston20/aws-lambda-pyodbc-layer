@@ -16,7 +16,7 @@ This repository provides a framework for building AWS Lambda layers that enable 
 - The Microsoft ODBC Driver for SQL Server is developed and maintained by Microsoft. Refer to the official [Microsoft documentation](https://learn.microsoft.com/en-us/sql/connect/python/pyodbc/python-sql-driver-pyodbc) for installation instructions and driver information.
 
 ## License
-This project is licensed under the MIT License. Feel free to use, modify, and distribute this project in accordance with the terms of the license.
+This project is licensed under the [GNU License](LICENSE). Feel free to use, modify, and distribute this project in accordance with the terms of the license.
 
 ## Contributions
 Contributions are welcome! If you have suggestions for improvements or find any issues, please open an issue or submit a pull request.
