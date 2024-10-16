@@ -69,7 +69,7 @@ jobs:
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "pyodbc-layer"
+          artifacts: "pyodbc-layer/pyodbc-layer*.zip"
         # env:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
