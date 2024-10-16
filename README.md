@@ -22,4 +22,4 @@ This project is licensed under the [GNU License](LICENSE). Feel free to use, mod
 Contributions are welcome! If you have suggestions for improvements or find any issues, please open an issue or submit a pull request.
 
 ## Credits
-This project was developed by [Vigneshwar Thiyagarajan](www.linkedin.com/in/vigneshwar-thiyagarajan-87220a124). Special thanks to the community for their contributions and support.
+This project was developed by [Vigneshwar Thiyagarajan](https://www.linkedin.com/in/vigneshwar-thiyagarajan-87220a124/). Special thanks to the community for their contributions and support.
