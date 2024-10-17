@@ -11,18 +11,20 @@ ARG PYTHON_VERSION
 ENV ODBCINI=/opt/odbc.ini
 ENV ODBCSYSINI=/opt
 
-# Define PKG_MANAGER based on Python version
-ARG PKG_MANAGER
+# Define PKG_MANAGER based on Python version and make it accessible in subsequent steps
 RUN if [[ "${PYTHON_VERSION}" == "3.12" ]]; then \
+        echo "Setting PKG_MANAGER to dnf"; \
         PKG_MANAGER="dnf"; \
     else \
+        echo "Setting PKG_MANAGER to yum"; \
         PKG_MANAGER="yum"; \
-    fi
+    fi && \
+    echo "PKG_MANAGER=$PKG_MANAGER" > /etc/pkg_manager.env
 
-# Install necessary build dependencies
-RUN ${PKG_MANAGER} install -y \
-    gcc gcc-c++ make automake autoconf libtool bison flex \
-    openssl-devel zlib-devel glibc-devel tar gzip
+# Install necessary build dependencies using PKG_MANAGER
+RUN source /etc/pkg_manager.env && $PKG_MANAGER install -y \
+gcc gcc-c++ make automake autoconf libtool bison flex \
+openssl-devel zlib-devel glibc-devel tar gzip
 
 # Download and build unixODBC
 RUN curl ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-${UNIXODBC_VERSION}.tar.gz -O && \
@@ -33,15 +35,16 @@ RUN curl ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-${UNIXODBC_VERSION}.tar.gz
     cd .. && rm -rf unixODBC-${UNIXODBC_VERSION}.tar.gz unixODBC-${UNIXODBC_VERSION}
 
 # Conditional ODBC Driver Installation Logic
-RUN if [[ "${MSODBC_VERSION}" == "18" || "${MSODBC_VERSION}" == "17" ]]; then \
+RUN source /etc/pkg_manager.env && \
+    if [[ "${MSODBC_VERSION}" == "18" || "${MSODBC_VERSION}" == "17" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
-        ACCEPT_EULA=Y ${PKG_MANAGER} install -y msodbcsql${MSODBC_VERSION}; \
+        ACCEPT_EULA=Y $PKG_MANAGER install -y msodbcsql${MSODBC_VERSION}; \
     elif [[ "${MSODBC_VERSION}" == "13.1" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
-        ACCEPT_EULA=Y ${PKG_MANAGER} install -y msodbcsql; \
+        ACCEPT_EULA=Y $PKG_MANAGER install -y msodbcsql; \
     elif [[ "${MSODBC_VERSION}" == "13" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
-        ACCEPT_EULA=Y ${PKG_MANAGER} install -y msodbcsql-13.0.1.0-1; \
+        ACCEPT_EULA=Y $PKG_MANAGER install -y msodbcsql-13.0.1.0-1; \
     else \
         echo "Unsupported ODBC version"; \
         exit 1; \
