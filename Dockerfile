@@ -41,10 +41,13 @@ RUN source /etc/pkg_manager.env && \
         ACCEPT_EULA=Y $PKG_MANAGER install -y msodbcsql${MSODBC_VERSION}; \
     elif [[ "${MSODBC_VERSION}" == "13.1" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
+        $PKG_MANAGER update && \
+        $PKG_MANAGER install -y openssl openssl-devel libcurl libcurl-devel  && \
         ACCEPT_EULA=Y $PKG_MANAGER install -y msodbcsql; \
     elif [[ "${MSODBC_VERSION}" == "13" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
         $PKG_MANAGER update && \
+        $PKG_MANAGER install -y openssl openssl-devel libcurl libcurl-devel  && \
         ACCEPT_EULA=Y $PKG_MANAGER install -y msodbcsql-13.0.1.0-1; \
     else \
         echo "Unsupported ODBC version"; \
