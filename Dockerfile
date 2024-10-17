@@ -12,7 +12,7 @@ RUN yum -y update && \
                    openssl-devel zlib-devel glibc-devel tar gzip zip \
                    patch zlib-devel bzip2 bzip2-devel readline-devel \
                    sqlite sqlite-devel tk-devel \
-                   libffi-devel xz-devel git curl wget
+                   libffi-devel xz-devel git
 
 # Install pyenv
 RUN curl https://pyenv.run | bash
