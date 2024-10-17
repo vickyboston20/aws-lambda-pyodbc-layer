@@ -12,7 +12,7 @@ RUN yum -y update && \
                    openssl-devel zlib-devel glibc-devel tar gzip zip \
                    patch zlib-devel bzip2 bzip2-devel readline-devel \
                    sqlite sqlite-devel tk-devel \
-                   libffi-devel xz-devel git
+                   libffi-devel xz-devel git wget
 
 # Install pyenv
 RUN curl https://pyenv.run | bash
@@ -42,9 +42,13 @@ RUN if [[ "${MSODBC_VERSION}" == "18" || "${MSODBC_VERSION}" == "17" ]]; then \
         ACCEPT_EULA=Y yum install -y msodbcsql${MSODBC_VERSION}; \
     elif [[ "${MSODBC_VERSION}" == "13.1" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
+        wget https://linuxsoft.cern.ch/cern/centos/7/updates/x86_64/Packages/openssl-libs-1.0.2k-26.el7_9.x86_64.rpm && \
+        rpm -ivh openssl-libs-1.0.2k-26.el7_9.x86_64.rpm --force && \
         ACCEPT_EULA=Y yum  install -y msodbcsql; \
     elif [[ "${MSODBC_VERSION}" == "13" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
+        wget https://linuxsoft.cern.ch/cern/centos/7/updates/x86_64/Packages/openssl-libs-1.0.2k-26.el7_9.x86_64.rpm && \
+        rpm -ivh openssl-libs-1.0.2k-26.el7_9.x86_64.rpm --force && \
         ACCEPT_EULA=Y yum install -y msodbcsql-13.0.1.0-1; \
     else \
         echo "Unsupported ODBC version"; \
