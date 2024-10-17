@@ -61,6 +61,9 @@ RUN echo "[ODBC Driver ${MSODBC_VERSION} for SQL Server]" > /opt/odbcinst.ini &&
     echo "Description = My ODBC Driver ${MSODBC_VERSION} for SQL Server" >> /opt/odbc.ini && \
     echo "Trace = No" >> /opt/odbc.ini
 
+# Ensure pip is available with the correct Python version
+RUN source $HOME/.bashrc && pyenv rehash && pip install --upgrade pip
+
 # Install pyodbc Python library
 RUN mkdir /opt/python/ && pip install pyodbc -t /opt/python/
 
