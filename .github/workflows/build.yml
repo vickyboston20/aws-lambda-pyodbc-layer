@@ -30,7 +30,6 @@ jobs:
       - name: Build Docker image for AWS Lambda layer
         run: |
           docker build \
-            --build-arg LAMBDA_BASE_IMAGE=public.ecr.aws/lambda/python:${{ matrix.python_version }} \
             --build-arg PYTHON_VERSION=${{ matrix.python_version }} \
             --build-arg MSODBC_VERSION=${{ matrix.msodbc_version }} \
             --build-arg UNIXODBC_VERSION=${{ matrix.unixodbc_version }} \
