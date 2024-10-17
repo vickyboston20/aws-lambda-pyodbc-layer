@@ -11,7 +11,7 @@ RUN yum -y update && \
     yum -y install gcc gcc-c++ make automake autoconf libtool bison flex \
                    openssl-devel zlib-devel glibc-devel tar gzip zip \
                    patch zlib-devel bzip2 bzip2-devel readline-devel \
-                   sqlite sqlite-devel openssl11-devel tk-devel \
+                   sqlite sqlite-devel tk-devel \
                    libffi-devel xz-devel git curl wget
 
 # Install pyenv
