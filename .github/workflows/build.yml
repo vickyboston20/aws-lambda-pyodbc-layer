@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        python_version: [3.12]
+        python_version: [3.12, 3.11]
         msodbc_version: [18, 17]
         unixodbc_version: [2.3.12]
 
