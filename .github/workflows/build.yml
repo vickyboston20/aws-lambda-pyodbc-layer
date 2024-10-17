@@ -31,6 +31,7 @@ jobs:
         run: |
           docker build \
             --build-arg LAMBDA_BASE_IMAGE=public.ecr.aws/lambda/python:${{ matrix.python_version }} \
+            --build-arg PYTHON_VERSION=${{ matrix.python_version }} \
             --build-arg MSODBC_VERSION=${{ matrix.msodbc_version }} \
             --build-arg UNIXODBC_VERSION=${{ matrix.unixodbc_version }} \
             -t pyodbc-lambda-layer:${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }} .
