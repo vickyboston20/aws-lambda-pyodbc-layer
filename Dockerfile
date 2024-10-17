@@ -24,7 +24,7 @@ RUN if [[ "${PYTHON_VERSION}" == "3.12" ]]; then \
 # Install necessary build dependencies using PKG_MANAGER
 RUN source /etc/pkg_manager.env && $PKG_MANAGER install -y \
 gcc gcc-c++ make automake autoconf libtool bison flex \
-openssl-devel zlib-devel glibc-devel tar gzip
+openssl-devel zlib-devel glibc-devel tar gzip zip
 
 # Download and build unixODBC
 RUN curl ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-${UNIXODBC_VERSION}.tar.gz -O && \
