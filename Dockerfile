@@ -42,13 +42,11 @@ RUN if [[ "${MSODBC_VERSION}" == "18" || "${MSODBC_VERSION}" == "17" ]]; then \
         ACCEPT_EULA=Y yum install -y msodbcsql${MSODBC_VERSION}; \
     elif [[ "${MSODBC_VERSION}" == "13.1" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
-        wget https://linuxsoft.cern.ch/cern/centos/7/updates/x86_64/Packages/openssl-libs-1.0.2k-26.el7_9.x86_64.rpm && \
-        rpm -ivh openssl-libs-1.0.2k-26.el7_9.x86_64.rpm --force && \
+        yum remove unixODBC-utf16 unixODBC-utf16-devel && \
         ACCEPT_EULA=Y yum  install -y msodbcsql; \
     elif [[ "${MSODBC_VERSION}" == "13" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
-        wget https://linuxsoft.cern.ch/cern/centos/7/updates/x86_64/Packages/openssl-libs-1.0.2k-26.el7_9.x86_64.rpm && \
-        rpm -ivh openssl-libs-1.0.2k-26.el7_9.x86_64.rpm --force && \
+        yum remove unixODBC && \
         ACCEPT_EULA=Y yum install -y msodbcsql-13.0.1.0-1; \
     else \
         echo "Unsupported ODBC version"; \
