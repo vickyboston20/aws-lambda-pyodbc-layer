@@ -32,7 +32,7 @@ RUN curl ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-${UNIXODBC_VERSION}.tar.gz
 # Conditional ODBC Driver Installation Logic
 RUN if [[ "${MSODBC_VERSION}" == "18" || "${MSODBC_VERSION}" == "17" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
-        ACCEPT_EULA=Y $PKG_MANAGER install -y msodbcsql${MSODBC_VERSION}; \
+        ACCEPT_EULA=Y ${PKG_MANAGER} install -y msodbcsql${MSODBC_VERSION}; \
     elif [[ "${MSODBC_VERSION}" == "13.1" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
         ACCEPT_EULA=Y $PKG_MANAGER install -y msodbcsql; \
