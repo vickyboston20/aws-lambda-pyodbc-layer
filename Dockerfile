@@ -11,19 +11,16 @@ ARG PYTHON_VERSION
 ENV ODBCINI=/opt/odbc.ini
 ENV ODBCSYSINI=/opt
 
-# Determine package manager and set it as an environment variable
+# Define PKG_MANAGER based on Python version
+ARG PKG_MANAGER
 RUN if [[ "${PYTHON_VERSION}" == "3.12" ]]; then \
         PKG_MANAGER="dnf"; \
     else \
         PKG_MANAGER="yum"; \
-    fi && \
-    echo "PKG_MANAGER=$PKG_MANAGER" >> /etc/environment
-
-# Load the PKG_MANAGER environment variable in future RUN commands
-ENV PKG_MANAGER=${PKG_MANAGER}
+    fi
 
 # Install necessary build dependencies
-RUN $PKG_MANAGER install -y \
+RUN ${PKG_MANAGER} install -y \
     gcc gcc-c++ make automake autoconf libtool bison flex \
     openssl-devel zlib-devel glibc-devel tar gzip
 
@@ -38,13 +35,13 @@ RUN curl ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-${UNIXODBC_VERSION}.tar.gz
 # Conditional ODBC Driver Installation Logic
 RUN if [[ "${MSODBC_VERSION}" == "18" || "${MSODBC_VERSION}" == "17" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
-        ACCEPT_EULA=Y $PKG_MANAGER install -y msodbcsql${MSODBC_VERSION}; \
+        ACCEPT_EULA=Y ${PKG_MANAGER} install -y msodbcsql${MSODBC_VERSION}; \
     elif [[ "${MSODBC_VERSION}" == "13.1" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
-        ACCEPT_EULA=Y $PKG_MANAGER install -y msodbcsql; \
+        ACCEPT_EULA=Y ${PKG_MANAGER} install -y msodbcsql; \
     elif [[ "${MSODBC_VERSION}" == "13" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
-        ACCEPT_EULA=Y $PKG_MANAGER install -y msodbcsql-13.0.1.0-1; \
+        ACCEPT_EULA=Y ${PKG_MANAGER} install -y msodbcsql-13.0.1.0-1; \
     else \
         echo "Unsupported ODBC version"; \
         exit 1; \
