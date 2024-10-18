@@ -69,3 +69,4 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "pyodbc-layer/pyodbc-layer-*.zip"
+          generateReleaseNotes: true
