@@ -72,7 +72,8 @@ jobs:
       - name: Download built artifacts
         uses: actions/download-artifact@v4
         with:
-          path: pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip
+          path: pyodbc-layer
+          pattern: pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip
 
       - name: Install LocalStack
         run: |
@@ -86,7 +87,7 @@ jobs:
         run: |
           awslocal lambda publish-layer-version \
             --layer-name pyodbc-layer \
-            --zip-file fileb://pyodbc-layer-*.zip \
+            --zip-file fileb://pyodbc-layer/pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip \
             --compatible-runtimes python${{ matrix.python_version }}
 
       - name: Create Lambda Function in LocalStack
