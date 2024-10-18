@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        msodbc_version: ["18", "17"]
+        msodbc_version: ["17"]
         unixodbc_version: ["2.3.12"]
 
     steps:
@@ -29,7 +29,7 @@ jobs:
       - name: Build Docker image for AWS Lambda layer
         run: |
           docker build \
-            --build-arg PYTHON_VERSIONS="3.12,3.11,3.10,3.9" \
+            --build-arg PYTHON_VERSIONS="3.12" \
             --build-arg MSODBC_VERSION=${{ matrix.msodbc_version }} \
             --build-arg UNIXODBC_VERSION=${{ matrix.unixodbc_version }} \
             -t pyodbc-lambda-layer:multi-python .
@@ -46,8 +46,82 @@ jobs:
           name: pyodbc-layer-multi-python-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}
           path: pyodbc-layer-*.zip
 
-  release:
+  test:
+    runs-on: ubuntu-latest
     needs: build
+
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "curl --fail http://localhost:1433 || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          ACCEPT_EULA: "Y"
+          SA_PASSWORD: "yourStrong(!)Password"
+
+    strategy:
+      matrix:
+        python_version: ["3.12"]
+        msodbc_version: ["17"]
+        unixodbc_version: ["2.3.12"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download built artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip
+
+      - name: Install LocalStack
+        run: |
+          pip install localstack awscli-local
+
+      - name: Start LocalStack
+        run: |
+          localstack start -d
+
+      - name: Create Lambda Layer in LocalStack
+        run: |
+          awslocal lambda publish-layer-version \
+            --layer-name pyodbc-layer \
+            --zip-file fileb://pyodbc-layer-*.zip \
+            --compatible-runtimes python${{ matrix.python_version }}
+
+      - name: Create Lambda Function in LocalStack
+        run: |
+          zip function.zip lambda/lambda_function.py
+          awslocal lambda create-function \
+            --function-name pyodbc-test-function-${{ matrix.python_version }}-${{ matrix.msodbc_version }}-${{ matrix.unixodbc_version }} \
+            --runtime python${{ matrix.python_version }} \
+            --role arn:aws:iam::000000000000:role/lambda-role \
+            --handler lambda_function.lambda_handler \
+            --zip-file fileb://function.zip \
+            --layers $(awslocal lambda list-layers --query 'Layers[0].LayerVersionArn' --output text)
+
+      - name: Wait for MSSQL to be healthy
+        run: |
+          until docker exec mssql curl -s http://localhost:1433; do
+            echo "Waiting for MSSQL to be ready..."
+            sleep 5
+          done
+
+      - name: Invoke Lambda Function in LocalStack for MSODBC ${{ matrix.msodbc_version }}
+        run: |
+          awslocal lambda invoke \
+            --function-name pyodbc-test-function-${{ matrix.python_version }}-${{ matrix.msodbc_version }}-${{ matrix.unixodbc_version }} \
+            --payload '{"msodbc_version": "${{ matrix.msodbc_version }}"}' \
+            response.json
+          cat response.json
+
+  release:
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: write
