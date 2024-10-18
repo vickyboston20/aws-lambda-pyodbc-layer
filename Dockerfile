@@ -62,6 +62,7 @@ RUN echo "[ODBC Driver ${MSODBC_VERSION} for SQL Server]" > /opt/odbcinst.ini &&
 
 # Install pyodbc Python library for each Python version and package into separate zip files
 RUN source $HOME/.bashrc && \
+    mkdir -p /opt/artifacts/ && \
     for version in $(echo ${PYTHON_VERSIONS} | tr ',' ' '); do \
         pyenv install $version && \
         pyenv global $version && \
@@ -69,7 +70,7 @@ RUN source $HOME/.bashrc && \
         mkdir -p /opt/python/ && \
         pip install pyodbc -t /opt/python/ && \
         cd /opt && \
-        zip -r9 /opt/pyodbc-layer-$version.zip . && \
+        zip -r9 /opt/artifacts/pyodbc-layer-$version-mssql${MSODBC_VERSION}-unixODBC${UNIXODBC_VERSION}.zip . && \
         rm -rf /opt/python && \
         pyenv rehash; \
     done

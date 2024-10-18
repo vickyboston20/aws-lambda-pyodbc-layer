@@ -37,7 +37,7 @@ jobs:
       - name: Create Container and Copy Artifacts
         run: |
           CONTAINER_ID=$(docker create pyodbc-lambda-layer:multi-python)
-          docker cp $CONTAINER_ID:/opt/pyodbc-layer-*.zip .
+          docker cp $CONTAINER_ID:/opt/artifacts/. .
           docker rm $CONTAINER_ID
 
       - name: Upload PyODBC layer zip as artifact
