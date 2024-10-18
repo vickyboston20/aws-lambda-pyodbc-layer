@@ -76,4 +76,4 @@ RUN source $HOME/.bashrc && \
     done
 
 # Final step to list all available zip files
-CMD ["ls", "/opt"]
+CMD ["ls", "/opt/artifacts"]
