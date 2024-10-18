@@ -16,7 +16,6 @@ jobs:
 
     strategy:
       matrix:
-        python_version: ["3.12", "3.11", "3.10", "3.9"]
         msodbc_version: ["18", "17"]
         unixodbc_version: ["2.3.12"]
 
@@ -30,22 +29,22 @@ jobs:
       - name: Build Docker image for AWS Lambda layer
         run: |
           docker build \
-            --build-arg PYTHON_VERSION=${{ matrix.python_version }} \
+            --build-arg PYTHON_VERSIONS="3.12,3.11,3.10,3.9" \
             --build-arg MSODBC_VERSION=${{ matrix.msodbc_version }} \
             --build-arg UNIXODBC_VERSION=${{ matrix.unixodbc_version }} \
-            -t pyodbc-lambda-layer:${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }} .
+            -t pyodbc-lambda-layer:multi-python .
 
       - name: Create Container and Copy Artifacts
         run: |
-          CONTAINER_ID=$(docker create pyodbc-lambda-layer:${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }})
-          docker cp $CONTAINER_ID:/opt/pyodbc-layer.zip ./pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip
+          CONTAINER_ID=$(docker create pyodbc-lambda-layer:multi-python)
+          docker cp $CONTAINER_ID:/opt/pyodbc-layer-*.zip .
           docker rm $CONTAINER_ID
 
       - name: Upload PyODBC layer zip as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}
-          path: pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip
+          name: pyodbc-layer-multi-python
+          path: pyodbc-layer-*.zip
 
   release:
     needs: build
@@ -62,11 +61,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: pyodbc-layer
-          pattern: pyodbc-layer-*
+          pattern: pyodbc-layer-*.zip
           merge-multiple: true
       - run: ls -R pyodbc-layer
 
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "pyodbc-layer/pyodbc-layer*.zip"
+          artifacts: "pyodbc-layer/pyodbc-layer-*.zip"

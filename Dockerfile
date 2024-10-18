@@ -2,7 +2,7 @@
 FROM amazonlinux:2023
 
 # Define arguments for versions
-ARG PYTHON_VERSION
+ARG PYTHON_VERSIONS
 ARG MSODBC_VERSION
 ARG UNIXODBC_VERSION
 
@@ -22,11 +22,6 @@ ENV HOME /root
 ENV PYENV_ROOT $HOME/.pyenv
 ENV PATH $PYENV_ROOT/bin:$PATH
 RUN echo 'eval "$(pyenv init --path)"' >> $HOME/.bashrc
-
-# Install Python using pyenv and set it as global version
-RUN source $HOME/.bashrc && \
-    pyenv install ${PYTHON_VERSION} && \
-    pyenv global ${PYTHON_VERSION}
 
 # Download and build unixODBC
 RUN curl ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-${UNIXODBC_VERSION}.tar.gz -O && \
@@ -65,12 +60,18 @@ RUN echo "[ODBC Driver ${MSODBC_VERSION} for SQL Server]" > /opt/odbcinst.ini &&
     echo "Description = My ODBC Driver ${MSODBC_VERSION} for SQL Server" >> /opt/odbc.ini && \
     echo "Trace = No" >> /opt/odbc.ini
 
-# Install pyodbc Python library
-RUN source $HOME/.bashrc && pyenv rehash && pip install --upgrade pip && \
-    mkdir /opt/python/ && pip install pyodbc -t /opt/python/
+# Install pyodbc Python library for each Python version and package into separate zip files
+RUN source $HOME/.bashrc && \
+    for version in $(echo ${PYTHON_VERSIONS} | tr ',' ' '); do \
+        pyenv global $version && \
+        pip install --upgrade pip && \
+        mkdir -p /opt/python/ && \
+        pip install pyodbc -t /opt/python/ && \
+        cd /opt && \
+        zip -r9 /opt/pyodbc-layer-$version.zip . && \
+        rm -rf /opt/python && \
+        pyenv rehash; \
+    done
 
-# Package the layer into a zip file
-RUN cd /opt && zip -r9 /opt/pyodbc-layer.zip .
-
-# Final step to make zip available
-CMD ["cat", "/opt/pyodbc-layer.zip"]
+# Final step to list all available zip files
+CMD ["ls", "/opt"]
