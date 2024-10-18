@@ -74,6 +74,7 @@ jobs:
         with:
           path: pyodbc-layer
           pattern: pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip
+          merge-multiple: true
 
       - name: Install LocalStack
         run: |
