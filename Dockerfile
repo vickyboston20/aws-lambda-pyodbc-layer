@@ -70,7 +70,7 @@ RUN source $HOME/.bashrc && \
         mkdir -p /opt/python/ && \
         pip install pyodbc -t /opt/python/ && \
         cd /opt && \
-        zip -r9 /opt/artifacts/pyodbc-layer-$version-mssql${MSODBC_VERSION}-unixODBC${UNIXODBC_VERSION}.zip . && \
+        zip -r9 /opt/artifacts/pyodbc-layer-$version-mssql${MSODBC_VERSION}-unixODBC${UNIXODBC_VERSION}.zip . -x "artifacts/*" && \
         rm -rf /opt/python && \
         pyenv rehash; \
     done
