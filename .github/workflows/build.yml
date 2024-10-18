@@ -55,14 +55,9 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2022-latest
         ports:
           - 1433:1433
-        options: >-
-          --health-cmd "curl --fail http://localhost:1433 || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
         env:
           ACCEPT_EULA: "Y"
-          SA_PASSWORD: "yourStrong(!)Password"
+          MSSQL_SA_PASSWORD: "yourStrong(!)Password"
 
     strategy:
       matrix:
