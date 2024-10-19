@@ -53,6 +53,8 @@ jobs:
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2022-latest
+        options:
+          --name mssql
         ports:
           - 1433:1433
         env:
@@ -92,7 +94,6 @@ jobs:
       - name: Test Lambda with MSSQL
         run: |
           docker run -d \
-            --network host \
             --entrypoint /usr/local/bin/aws-lambda-rie \
             -v $(pwd)/pyodbc-layer:/opt \
             -v $(pwd)/lambda_function.py:/var/task/lambda_function.py \
