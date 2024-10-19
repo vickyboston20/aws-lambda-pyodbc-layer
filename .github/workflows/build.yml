@@ -73,7 +73,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: pyodbc-layer
-          pattern: pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip
+          pattern: pyodbc-layer-*
           merge-multiple: true
 
       - name: Install LocalStack
