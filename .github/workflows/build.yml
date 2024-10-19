@@ -99,7 +99,7 @@ jobs:
             -e MSSQL_SA_PASSWORD="yourStrong(!)Password" \
             -e _HANDLER=lambda_function.lambda_handler \
             public.ecr.aws/lambda/python:${{ matrix.python_version }} \
-            aws-lambda-rie python3 /var/runtime/bootstrap
+            python3 /var/task/lambda_function.py
 
   release:
     needs: test
