@@ -93,6 +93,7 @@ jobs:
         run: |
           docker run --rm \
             --network host \
+            --entrypoint /usr/local/bin/aws-lambda-rie \
             -v $(pwd)/pyodbc-layer:/opt \
             -v $(pwd)/lambda_function.py:/var/task/lambda_function.py \
             -e MSSQL_SA_PASSWORD="yourStrong(!)Password" \
