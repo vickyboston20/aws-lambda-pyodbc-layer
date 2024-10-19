@@ -97,9 +97,13 @@ jobs:
             -v $(pwd)/pyodbc-layer:/opt \
             -v $(pwd)/lambda_function.py:/var/task/lambda_function.py \
             -e MSSQL_SA_PASSWORD="yourStrong(!)Password" \
-            -e _HANDLER=lambda_function.lambda_handler \
+            -p 9000:8080 \
             public.ecr.aws/lambda/python:${{ matrix.python_version }} \
-            python3 /var/task/lambda_function.py
+            /var/runtime/bootstrap lambda_function.lambda_handler
+
+          sleep 3
+
+          curl -v -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"msodbc_version": "'${{ matrix.msodbc_version }}'"}'
 
   release:
     needs: test
