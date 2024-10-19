@@ -109,14 +109,7 @@ jobs:
             --zip-file fileb://function.zip \
             --layers "${{ steps.publish-layer.outputs.layer_arn }}"
 
-      - name: Wait for MSSQL to be healthy
-        run: |
-          until curl -s mssql:1433; do
-            echo "Waiting for MSSQL to be ready..."
-            sleep 5
-          done
-
-      - name: Invoke Lambda Function in LocalStack for MSODBC ${{ matrix.msodbc_version }}
+      - name: Invoke Lambda Function in LocalStack for PYTHON ${{ matrix.python_version }} and MSODBC ${{ matrix.msodbc_version }}
         run: |
           awslocal lambda invoke \
             --function-name pyodbc-test-function-${{ matrix.python_version }}-${{ matrix.msodbc_version }}-${{ matrix.unixodbc_version }} \
