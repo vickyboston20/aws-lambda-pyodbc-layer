@@ -111,7 +111,7 @@ jobs:
 
       - name: Wait for MSSQL to be healthy
         run: |
-          until docker exec mssql curl -s http://localhost:1433; do
+          until curl -s mssql:1433; do
             echo "Waiting for MSSQL to be ready..."
             sleep 5
           done
