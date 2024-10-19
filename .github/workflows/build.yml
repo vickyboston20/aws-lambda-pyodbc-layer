@@ -58,7 +58,8 @@ jobs:
         env:
           ACCEPT_EULA: "Y"
           MSSQL_SA_PASSWORD: "yourStrong(!)Password"
-
+      python-lambda:
+        image: public.ecr.aws/lambda/python:3.12
     strategy:
       matrix:
         python_version: ["3.12"]
@@ -76,48 +77,23 @@ jobs:
           pattern: pyodbc-layer-*
           merge-multiple: true
 
-      - name: Install LocalStack
+      - name: Unzip Lambda layer
         run: |
-          pip install localstack awscli-local
+          unzip pyodbc-layer/pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip -d pyodbc-layer
 
-      - name: Start LocalStack
+      - name: Copy Lambda function into Docker container
         run: |
-          localstack start -d
+          cp lambda/lambda_function.py .
 
-      - name: Create Lambda Layer in LocalStack
-        id: publish-layer
+      - name: Test Lambda with MSSQL
         run: |
-          LAYER_ARN=$(
-            awslocal lambda publish-layer-version \
-            --layer-name pyodbc-layer \
-            --zip-file fileb://pyodbc-layer/pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip \
-            --compatible-runtimes python${{ matrix.python_version }} \
-            --query 'LayerVersionArn' \
-            --output text
-          )
-          echo "layer_arn=$(echo $LAYER_ARN)" >> $GITHUB_OUTPUT
-
-
-      - name: Create Lambda Function in LocalStack
-        run: |
-          zip function.zip lambda/lambda_function.py
-          awslocal lambda create-function \
-            --function-name pyodbc-test-function-${{ matrix.python_version }}-${{ matrix.msodbc_version }}-${{ matrix.unixodbc_version }} \
-            --runtime python${{ matrix.python_version }} \
-            --role arn:aws:iam::000000000000:role/lambda-role \
-            --handler lambda_function.lambda_handler \
-            --zip-file fileb://function.zip \
-            --layers "${{ steps.publish-layer.outputs.layer_arn }}"
-
-      - name: Invoke Lambda Function in LocalStack for PYTHON ${{ matrix.python_version }} and MSODBC ${{ matrix.msodbc_version }}
-        run: |
-          awslocal lambda wait function-active-v2 --function-name pyodbc-test-function-${{ matrix.python_version }}-${{ matrix.msodbc_version }}-${{ matrix.unixodbc_version }}
-          awslocal lambda invoke \
-            --function-name pyodbc-test-function-${{ matrix.python_version }}-${{ matrix.msodbc_version }}-${{ matrix.unixodbc_version }} \
-            --cli-binary-format raw-in-base64-out \
-            --payload '{"msodbc_version": "'${{ matrix.msodbc_version }}'"}' \
-            response.json
-          cat response.json
+          docker run --rm \
+            --network host \
+            -v $(pwd)/pyodbc-layer:/opt \
+            -v $(pwd)/lambda_function.py:/var/task/lambda_function.py \
+            -e MSSQL_SA_PASSWORD="yourStrong(!)Password" \
+            public.ecr.aws/lambda/python:${{ matrix.python_version }} \
+            python3 /var/task/lambda_function.py
 
   release:
     needs: test
