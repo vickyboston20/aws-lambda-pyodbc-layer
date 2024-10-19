@@ -50,6 +50,10 @@ RUN if [[ "${MSODBC_VERSION}" == "18" || "${MSODBC_VERSION}" == "17" ]]; then \
         exit 1; \
     fi
 
+RUN cd /opt/ && \
+    cp -r /opt/microsoft/msodbcsql${MSODBC_VERSION}/ . && \
+    rm -rf /opt/microsoft/
+
 # Configure ODBC
 RUN echo "[ODBC Driver ${MSODBC_VERSION} for SQL Server]" > /opt/odbcinst.ini && \
     echo "Description=Microsoft ODBC Driver ${MSODBC_VERSION} for SQL Server" >> /opt/odbcinst.ini && \
