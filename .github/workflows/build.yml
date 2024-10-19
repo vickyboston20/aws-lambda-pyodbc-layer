@@ -111,8 +111,10 @@ jobs:
 
       - name: Invoke Lambda Function in LocalStack for PYTHON ${{ matrix.python_version }} and MSODBC ${{ matrix.msodbc_version }}
         run: |
+          LAMBDA_NAME=pyodbc-test-function-${{ matrix.python_version }}-${{ matrix.msodbc_version }}-${{ matrix.unixodbc_version }}
+          awslocal lambda wait function-active-v2 --function-name $LAMBDA_NAME
           awslocal lambda invoke \
-            --function-name pyodbc-test-function-${{ matrix.python_version }}-${{ matrix.msodbc_version }}-${{ matrix.unixodbc_version }} \
+            --function-name $LAMBDA_NAME \
             --cli-binary-format raw-in-base64-out \
             --payload '{"msodbc_version": "'${{ matrix.msodbc_version }}'"}' \
             response.json
