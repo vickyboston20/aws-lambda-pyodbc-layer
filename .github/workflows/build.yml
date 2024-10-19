@@ -85,11 +85,18 @@ jobs:
           localstack start -d
 
       - name: Create Lambda Layer in LocalStack
+        id: publish-layer
         run: |
-          awslocal lambda publish-layer-version \
+          LAYER_ARN=$(
+            awslocal lambda publish-layer-version \
             --layer-name pyodbc-layer \
             --zip-file fileb://pyodbc-layer/pyodbc-layer-${{ matrix.python_version }}-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}.zip \
-            --compatible-runtimes python${{ matrix.python_version }}
+            --compatible-runtimes python${{ matrix.python_version }} \
+            --query 'LayerVersionArn' \
+            --output text
+          )
+          echo "layer_arn=$(echo $LAYER_ARN)" >> $GITHUB_OUTPUT
+
 
       - name: Create Lambda Function in LocalStack
         run: |
@@ -100,7 +107,7 @@ jobs:
             --role arn:aws:iam::000000000000:role/lambda-role \
             --handler lambda_function.lambda_handler \
             --zip-file fileb://function.zip \
-            --layers $(awslocal lambda list-layers --query 'Layers[0].LayerVersionArn' --output text)
+            --layers "${{ steps.publish-layer.outputs.layer_arn }}"
 
       - name: Wait for MSSQL to be healthy
         run: |
