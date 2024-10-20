@@ -11,7 +11,7 @@ Currently, this project supports only x86_64 architecture. Future updates will i
 ## Features
 
 - **Version-Specific Artifacts**: Lambda layers are built for specific combinations of:
-  - **Python versions**: ```3.9```, ```3.10```,```3.11```, ```3.12``` (using [pyenv](https://github.com/pyenv/pyenv))
+  - **Python versions**: ```3.9```, ```3.10```,```3.11```, ```3.12```, ```3.13``` (using [pyenv](https://github.com/pyenv/pyenv))
   - **Microsoft ODBC driver versions**: ```17```, ```18```(using [Microsoft ODBC driver versions](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server))
   - **UNIXODBC versions**: ```2.3.12``` (with support for [multiple ODBC versions](https://www.unixodbc.org/download.html))
 
@@ -59,7 +59,8 @@ To build the Lambda layers locally, you can follow these steps:
 
     ```bash
     docker build \
-      --build-arg PYTHON_VERSIONS="3.12,3.11,3.10,3.9" \
+      --platform linux/amd64 \ 
+      --build-arg PYTHON_VERSIONS="3.13,3.12,3.11,3.10,3.9" \
       --build-arg MSODBC_VERSION=18 \
       --build-arg UNIXODBC_VERSION=2.3.12 \
       -t pyodbc-lambda-layer:multi-python .
@@ -81,7 +82,7 @@ If you want to test the Lambda layers, simply push your code to the relevant bra
 
 ## Roadmap
 
-- **Current Support**: The layers support the x86_64 architecture for Python ```3.9```, ```3.10```, ```3.11```, ```3.12``` with Microsoft ODBC Driver versions ```17``` and ```18```, and UNIXODBC ```2.3.12```.
+- **Current Support**: The layers support the x86_64 architecture for Python ```3.9```, ```3.10```, ```3.11```, ```3.12```, ```3.13``` with Microsoft ODBC Driver versions ```17``` and ```18```, and UNIXODBC ```2.3.12```.
 - **Future Updates**:
   - **ARM64 Support**: In future releases, support for the arm64 architecture will be added, allowing for broader compatibility across different AWS Lambda runtime environments.
 
