@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        msodbc_version: ["17"]
+        msodbc_version: ["17", "18"]
         unixodbc_version: ["2.3.12"]
 
     steps:
@@ -58,7 +58,7 @@ jobs:
     strategy:
       matrix:
         python_version: ["3.12"]
-        msodbc_version: ["17"]
+        msodbc_version: ["17", "18"]
         unixodbc_version: ["2.3.12"]
 
     steps:
@@ -151,18 +151,19 @@ jobs:
           body: |
             # AWS Lambda Layer Release - PyODBC for MSSQL
 
-            We are excited to announce the latest release of AWS Lambda layers for connecting to SQL Server using PyODBC. These layers come pre-configured with the necessary ODBC drivers to enable seamless integration with your AWS Lambda functions.
+            We are excited to announce the release of the AWS Lambda layer artifacts that provide seamless connectivity to Microsoft SQL Server databases using the [pyodbc](https://pypi.org/project/pyodbc) library.
+
+            This release includes version-specific zip files tailored for various combinations of Python versions, Microsoft ODBC driver versions, and UNIXODBC versions. You can use these artifacts to easily integrate SQL Server connectivity into your AWS Lambda functions without the hassle of manual configuration.
 
             ### Available packages for this release:
 
-              - **pyodbc-layer-3.12-mssql18-unixODBC2.3.12.zip**: For Python 3.12 on x86_64 Lambda environments.
-              - **pyodbc-layer-3.12-mssql17-unixODBC2.3.12.zip**: For Python 3.12 on x86_64 Lambda environments.
+              - **pyodbc-layer-3.12-mssql18-unixODBC2.3.12.zip**: For Python 3.12 with Microsoft ODBC Driver 18 and UNIXODBC 2.3.12.
+              - **pyodbc-layer-3.12-mssql17-unixODBC2.3.12.zip**: For Python 3.12 with Microsoft ODBC Driver 17 and UNIXODBC 2.3.12.
 
-            ### Instructions:
-            1. Download the appropriate layer based on your Lambda runtime environment and architecture.
-            2. Attach the downloaded layer to your Lambda function using the AWS Management Console or AWS CLI.
-            3. Configure your connection settings for MSSQL within your Lambda function.
+            ### Key Features:
+            - **Automated CI/CD**: Our GitHub Actions CI/CD pipeline ensures that the latest Lambda layer artifacts are consistently built, tested, and released whenever new versions are pushed.
+            - **Effortless Integration**: Simply download the pre-built zip files from the GitHub releases section and attach them to your AWS Lambda functions.
 
-            These layers provide robust MSSQL Server connectivity, simplifying the process of integrating MSSQL databases into your serverless workflows.
+            To get started, refer to the [Usage](#usage) section in the README for detailed steps on downloading and integrating the layers into your Lambda functions.
 
-            Thank you for using our AWS Lambda layers. We look forward to supporting your applications and improving your development experience!
+            Thank you for using our AWS Lambda layers for PyODBC with Microsoft SQL Server. We look forward to supporting your serverless applications!
