@@ -9,7 +9,7 @@ ARG UNIXODBC_VERSION
 # Install pyenv dependencies and required build tools
 RUN yum -y update && \
     yum -y install gcc gcc-c++ make automake autoconf libtool bison flex \
-                   openssl-devel openssl11-devel zlib-devel glibc-devel tar gzip zip \
+                   openssl11-devel zlib-devel glibc-devel tar gzip zip \
                    patch zlib-devel bzip2 bzip2-devel readline-devel \
                    sqlite sqlite-devel tk-devel \
                    libffi-devel xz-devel git wget
