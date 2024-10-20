@@ -29,7 +29,7 @@ jobs:
       - name: Build Docker image for AWS Lambda layer
         run: |
           docker build \
-            --build-arg PYTHON_VERSIONS="3.11,3.12" \
+            --build-arg PYTHON_VERSIONS="3.9,3.10,3.11,3.12" \
             --build-arg MSODBC_VERSION=${{ matrix.msodbc_version }} \
             --build-arg UNIXODBC_VERSION=${{ matrix.unixodbc_version }} \
             -t pyodbc-lambda-layer:multi-python .
@@ -57,7 +57,7 @@ jobs:
 
     strategy:
       matrix:
-        python_version: ["3.11", "3.12"]
+        python_version: ["3.9", "3.10", "3.11", "3.12"]
         msodbc_version: ["17", "18"]
         unixodbc_version: ["2.3.12"]
 
