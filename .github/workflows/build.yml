@@ -74,6 +74,17 @@ jobs:
             -p 1433:1433 \
             mcr.microsoft.com/mssql/server:2022-latest
 
+      - name: Wait for MSSQL to be ready (Health Check)
+        run: |
+          for i in {1..30}; do
+            if docker exec mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "yourStrong(!)Password" -Q "SELECT 1" > /dev/null 2>&1; then
+              echo "MSSQL is ready!"
+              break
+            fi
+            echo "Waiting for MSSQL to be ready..."
+            sleep 5
+          done
+
       - name: Download built artifacts
         uses: actions/download-artifact@v4
         with:
