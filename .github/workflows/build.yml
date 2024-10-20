@@ -114,7 +114,8 @@ jobs:
 
           sleep 10
 
-          curl -v -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"msodbc_version": "${{ matrix.msodbc_version }}"}'
+          chmod +x test/check_lambda.sh
+          ./test/check_lambda.sh ${{ matrix.msodbc_version }}
 
   release:
     needs: test
