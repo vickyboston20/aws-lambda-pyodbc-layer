@@ -45,8 +45,13 @@ jobs:
         with:
           name: pyodbc-layer-multi-python-mssql${{ matrix.msodbc_version }}-unixODBC${{ matrix.unixodbc_version }}
           path: pyodbc-layer-*.zip
+          retention-days: 1
 
   test:
+    env:
+      MSSQL_SERVER_VERSION: 2022-latest
+      MSSQL_SA_PASSWORD: yourStrong(@)Password
+
     runs-on: ubuntu-latest
     needs: build
 
@@ -70,9 +75,9 @@ jobs:
             --name mssql \
             --network lambda-network \
             -e ACCEPT_EULA=Y \
-            -e MSSQL_SA_PASSWORD="yourStrong(@)Password" \
+            -e MSSQL_SA_PASSWORD="${{ env.MSSQL_SA_PASSWORD }}" \
             -p 1433:1433 \
-            mcr.microsoft.com/mssql/server:2022-latest
+            mcr.microsoft.com/mssql/server:${{ env.MSSQL_SERVER_VERSION }}
 
       - name: Wait for MSSQL to be ready (Health Check)
         run: |
@@ -107,7 +112,7 @@ jobs:
             --entrypoint /usr/local/bin/aws-lambda-rie \
             -v $(pwd)/pyodbc-layer:/opt \
             -v $(pwd)/lambda_function.py:/var/task/lambda_function.py \
-            -e MSSQL_SA_PASSWORD="yourStrong(@)Password" \
+            -e MSSQL_SA_PASSWORD="${{ env.MSSQL_SA_PASSWORD }}" \
             -p 9000:8080 \
             public.ecr.aws/lambda/python:${{ matrix.python_version }} \
             /var/runtime/bootstrap lambda_function.lambda_handler
@@ -134,10 +139,30 @@ jobs:
           path: pyodbc-layer
           pattern: pyodbc-layer-*
           merge-multiple: true
+
       - run: ls -R pyodbc-layer
 
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: "pyodbc-layer/pyodbc-layer-*.zip"
+          tag: ${{ github.ref_name }}
           generateReleaseNotes: true
+          body: |
+            # AWS Lambda Layer Release - PyODBC for MSSQL
+
+            We are excited to announce the latest release of AWS Lambda layers for connecting to SQL Server using PyODBC. These layers come pre-configured with the necessary ODBC drivers to enable seamless integration with your AWS Lambda functions.
+
+            ### Available packages for this release:
+
+              - **pyodbc-layer-3.12-mssql18-unixODBC2.3.12.zip**: For Python 3.12 on x86_64 Lambda environments.
+              - **pyodbc-layer-3.12-mssql17-unixODBC2.3.12.zip**: For Python 3.12 on x86_64 Lambda environments.
+
+            ### Instructions:
+            1. Download the appropriate layer based on your Lambda runtime environment and architecture.
+            2. Attach the downloaded layer to your Lambda function using the AWS Management Console or AWS CLI.
+            3. Configure your connection settings for MSSQL within your Lambda function.
+
+            These layers provide robust MSSQL Server connectivity, simplifying the process of integrating MSSQL databases into your serverless workflows.
+
+            Thank you for using our AWS Lambda layers. We look forward to supporting your applications and improving your development experience!
