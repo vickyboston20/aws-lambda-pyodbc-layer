@@ -98,7 +98,7 @@ jobs:
       - name: Test Lambda with MSSQL
         run: |
           docker run -d \
-            --network lambda-network
+            --network lambda-network \
             --entrypoint /usr/local/bin/aws-lambda-rie \
             -v $(pwd)/pyodbc-layer:/opt \
             -v $(pwd)/lambda_function.py:/var/task/lambda_function.py \
