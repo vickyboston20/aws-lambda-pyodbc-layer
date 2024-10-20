@@ -1,5 +1,5 @@
-# Use the latest Amazon Linux 2023 as the base image
-FROM amazonlinux:2023
+# Use the latest Amazon Linux 2 as the base image
+FROM amazonlinux:2
 
 # Define arguments for versions
 ARG PYTHON_VERSIONS

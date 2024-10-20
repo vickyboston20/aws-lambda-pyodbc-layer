@@ -107,7 +107,6 @@ jobs:
 
       - name: Test Lambda with MSSQL
         run: |
-          LATEST_TAG="${{ matrix.python_version }}.x"
           docker run -d \
             --network lambda-network \
             --entrypoint /usr/local/bin/aws-lambda-rie \
@@ -115,7 +114,7 @@ jobs:
             -v $(pwd)/lambda_function.py:/var/task/lambda_function.py \
             -e MSSQL_SA_PASSWORD="${{ env.MSSQL_SA_PASSWORD }}" \
             -p 9000:8080 \
-            public.ecr.aws/lambda/python:${LATEST_TAG} \
+            public.ecr.aws/lambda/python:${{ matrix.python_version }} \
             /var/runtime/bootstrap lambda_function.lambda_handler
 
           sleep 10
