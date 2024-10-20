@@ -1,4 +1,4 @@
-name: Build and Release AWS Lambda Layer for PyODBC
+name: Build Test and Release AWS Lambda Layer for PyODBC
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
       - name: Build Docker image for AWS Lambda layer
         run: |
           docker build \
-            --build-arg PYTHON_VERSIONS="3.12" \
+            --build-arg PYTHON_VERSIONS="3.9,3.10,3.11,3.12" \
             --build-arg MSODBC_VERSION=${{ matrix.msodbc_version }} \
             --build-arg UNIXODBC_VERSION=${{ matrix.unixodbc_version }} \
             -t pyodbc-lambda-layer:multi-python .
@@ -57,7 +57,7 @@ jobs:
 
     strategy:
       matrix:
-        python_version: ["3.12"]
+        python_version: ["3.9", "3.10", "3.11", "3.12"]
         msodbc_version: ["17", "18"]
         unixodbc_version: ["2.3.12"]
 
@@ -157,6 +157,12 @@ jobs:
 
             ### Available packages for this release:
 
+              - **pyodbc-layer-3.9-mssql18-unixODBC2.3.12.zip**: For Python 3.9 with Microsoft ODBC Driver 18 and UNIXODBC 2.3.12.
+              - **pyodbc-layer-3.9-mssql17-unixODBC2.3.12.zip**: For Python 3.9 with Microsoft ODBC Driver 17 and UNIXODBC 2.3.12.
+              - **pyodbc-layer-3.10-mssql18-unixODBC2.3.12.zip**: For Python 3.10 with Microsoft ODBC Driver 18 and UNIXODBC 2.3.12.
+              - **pyodbc-layer-3.10-mssql17-unixODBC2.3.12.zip**: For Python 3.10 with Microsoft ODBC Driver 17 and UNIXODBC 2.3.12.
+              - **pyodbc-layer-3.11-mssql18-unixODBC2.3.12.zip**: For Python 3.11 with Microsoft ODBC Driver 18 and UNIXODBC 2.3.12.
+              - **pyodbc-layer-3.11-mssql17-unixODBC2.3.12.zip**: For Python 3.11 with Microsoft ODBC Driver 17 and UNIXODBC 2.3.12.
               - **pyodbc-layer-3.12-mssql18-unixODBC2.3.12.zip**: For Python 3.12 with Microsoft ODBC Driver 18 and UNIXODBC 2.3.12.
               - **pyodbc-layer-3.12-mssql17-unixODBC2.3.12.zip**: For Python 3.12 with Microsoft ODBC Driver 17 and UNIXODBC 2.3.12.
 
@@ -164,6 +170,6 @@ jobs:
             - **Automated CI/CD**: Our GitHub Actions CI/CD pipeline ensures that the latest Lambda layer artifacts are consistently built, tested, and released whenever new versions are pushed.
             - **Effortless Integration**: Simply download the pre-built zip files from the GitHub releases section and attach them to your AWS Lambda functions.
 
-            To get started, refer to the [Usage](#usage) section in the README for detailed steps on downloading and integrating the layers into your Lambda functions.
+            To get started, refer to the [Usage](README.md#usage) section in the README for detailed steps on downloading and integrating the layers into your Lambda functions.
 
             Thank you for using our AWS Lambda layers for PyODBC with Microsoft SQL Server. We look forward to supporting your serverless applications!

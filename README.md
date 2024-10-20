@@ -4,6 +4,10 @@
 
 This repository provides a framework for building AWS Lambda layers that enable connectivity to Microsoft SQL Server databases using the [pyodbc](https://pypi.org/project/pyodbc) library. Each artifact is version-specific, tailored for a particular combination of Python, Microsoft ODBC driver and UNIXODBC versions. The GitHub Actions CI/CD pipeline automates the building, packaging and deployment of these artifacts as zip files, allowing developers to easily create and utilize layers in their AWS Lambda functions.
 
+## Important
+
+Currently, this project supports only x86_64 architecture. Future updates will include support for arm64 architecture.
+
 ## Features
 
 - **Version-Specific Artifacts**: Lambda layers are built for specific combinations of:
@@ -11,7 +15,7 @@ This repository provides a framework for building AWS Lambda layers that enable 
   - **Microsoft ODBC driver versions**: ```17```, ```18```(using [Microsoft ODBC driver versions](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server))
   - **UNIXODBC versions**: ```2.3.12``` (with support for [multiple ODBC versions](https://www.unixodbc.org/download.html))
 
-- **Automated CI/CD with GitHub Actions**: The build and release pipeline is fully automated using GitHub Actions. This setup ensures the latest Lambda layer artifacts are built, tested, and made available for download whenever a new version is pushed or a pull request is created.
+- **Automated CI/CD with GitHub Actions**: The build, test and release pipeline is fully automated using GitHub Actions. This setup ensures the latest Lambda layer artifacts are built, tested, and made available for download whenever a new version is pushed or a pull request is created.
 
 - **Effortless Lambda Integration**: Developers can easily download the pre-built zip files and directly use them in their Lambda functions without having to build or configure the pyodbc setup manually.
 
@@ -27,11 +31,12 @@ This repository provides a framework for building AWS Lambda layers that enable 
 
 ## GitHub Actions Workflow
 
-The GitHub Actions workflow [build.yml](.github/workflows/build.yml) builds the Docker image and packages the Lambda layers as zip using the following steps:
+The GitHub Actions workflow [build.yml](.github/workflows/build.yml) builds the Docker image, testing the layer and packages the Lambda layers as zip using the following steps:
 
 1. **Docker Build**: The Docker image is built with the specified Python, Microsoft ODBC, and UNIXODBC versions. The pyodbc library is installed for each Python version.
 2. **Artifacts Creation**: Zip files are created for each combination of Python and ODBC versions. These are stored in the ```/opt/artifacts/``` directory.
-3. **Release**: Upon pushing a version tag (e.g., ```v1.0.0```), the workflow automatically creates a new GitHub release and includes the relevant zip files for easy download.
+3. **Testing**: Each Lambda layer is tested against a live SQL Server instance running in Docker. The test framework ensures that the pyodbc library and ODBC driver are functioning correctly.
+4. **Release**: Upon pushing a version tag (e.g., ```v1.0.0```), the workflow automatically creates a new GitHub release and includes the relevant zip files for easy download.
 
 ### Build Matrix
 
@@ -70,6 +75,16 @@ To build the Lambda layers locally, you can follow these steps:
 
 5. The zip files will be available in the current directory for you to use.
 
+## How to Test
+
+If you want to test the Lambda layers, simply push your code to the relevant branch in the repository. The CI pipeline will automatically handle building and testing the Lambda layers based on the configuration in the build.yml file.
+
+## Roadmap
+
+- **Current Support**: The layers support the x86_64 architecture for Python ```3.9```, ```3.10```, ```3.11```, ```3.12``` with Microsoft ODBC Driver versions ```17``` and ```18```, and UNIXODBC ```2.3.12```.
+- **Future Updates**:
+  - **ARM64 Support**: In future releases, support for the arm64 architecture will be added, allowing for broader compatibility across different AWS Lambda runtime environments.
+
 ## Acknowledgments
 
 - **PyODBC**: This project uses the ```pyodbc``` library, which is maintained by the open-source community. More information can be found in the [pyodbc GitHub repository](https://github.com/mkleehammer/pyodbc).
@@ -80,7 +95,7 @@ To build the Lambda layers locally, you can follow these steps:
 
 ## License
 
-This project is licensed under the [GNU General Public License v3.0](LICENSE). Feel free to use, modify, and distribute this project under the terms of the license.
+This project is licensed under the [MIT](LICENSE). Feel free to use, modify, and distribute this project under the terms of the license.
 
 ## Contributions
 
