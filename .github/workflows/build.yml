@@ -105,14 +105,9 @@ jobs:
           chmod +x aws-lambda-rie
           mv aws-lambda-rie /usr/local/bin/aws-lambda-rie
 
-      - name: Fetch latest Python ${{ matrix.python_version }}.x Lambda image tag
-        id: python-latest-version
-        run: |
-          LATEST_TAG=$(aws ecr-public describe-images --repository-name lambda/python --query "sort_by(imageDetails,&imagePushedAt)[?starts_with(imageTags, '${{ matrix.python_version }}.')].imageTags[-1]" --output text)
-          echo "latest_tag=$(echo $LATEST_TAG)" >> $GITHUB_OUTPUT
-
       - name: Test Lambda with MSSQL
         run: |
+          LATEST_TAG="${{ matrix.python_version }}.x"
           docker run -d \
             --network lambda-network \
             --entrypoint /usr/local/bin/aws-lambda-rie \
@@ -120,7 +115,7 @@ jobs:
             -v $(pwd)/lambda_function.py:/var/task/lambda_function.py \
             -e MSSQL_SA_PASSWORD="${{ env.MSSQL_SA_PASSWORD }}" \
             -p 9000:8080 \
-            public.ecr.aws/lambda/python:${{ steps.python-latest-version.outputs.latest_tag }} \
+            public.ecr.aws/lambda/python:${LATEST_TAG} \
             /var/runtime/bootstrap lambda_function.lambda_handler
 
           sleep 10
