@@ -50,14 +50,12 @@ RUN if [[ "${MSODBC_VERSION}" == "18" || "${MSODBC_VERSION}" == "17" ]]; then \
         exit 1; \
     fi
 
-RUN cd /opt/ && \
-    cp -r /opt/microsoft/msodbcsql${MSODBC_VERSION}/ . && \
-    rm -rf /opt/microsoft/
 
 # Configure ODBC
-RUN echo "[ODBC Driver ${MSODBC_VERSION} for SQL Server]" > /opt/odbcinst.ini && \
+RUN DRIVER_PATH=$(find /opt/microsoft/msodbcsql${MSODBC_VERSION}/lib64/ -name 'libmsodbcsql*.so' | head -n 1) && \
+    echo "[ODBC Driver ${MSODBC_VERSION} for SQL Server]" > /opt/odbcinst.ini && \
     echo "Description=Microsoft ODBC Driver ${MSODBC_VERSION} for SQL Server" >> /opt/odbcinst.ini && \
-    echo "Driver=/opt/msodbcsql${MSODBC_VERSION}/lib64/libmsodbcsql-${MSODBC_VERSION}.so" >> /opt/odbcinst.ini && \
+    echo "Driver=$DRIVER_PATH" >> /opt/odbcinst.ini && \
     echo "UsageCount=1" >> /opt/odbcinst.ini && \
     echo "[ODBC Driver ${MSODBC_VERSION} for SQL Server]" > /opt/odbc.ini && \
     echo "Driver = ODBC Driver ${MSODBC_VERSION} for SQL Server" >> /opt/odbc.ini && \
