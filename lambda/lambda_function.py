@@ -7,7 +7,7 @@ def lambda_handler(event, context):
     try:
         conn = pyodbc.connect(
             f'DRIVER={{ODBC Driver {msodbc_version} for SQL Server}};'
-            'SERVER=mssql-server;'
+            'SERVER=mssql'
             'DATABASE=master;'
             'UID=sa;'
             'PWD=yourStrong(!)Password'
