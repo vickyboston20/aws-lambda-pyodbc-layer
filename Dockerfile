@@ -1,5 +1,5 @@
 # Use the latest Amazon Linux 2 as the base image
-FROM amazonlinux:2
+FROM amazonlinux:latest
 
 # Define arguments for versions
 ARG PYTHON_VERSIONS
@@ -7,9 +7,9 @@ ARG MSODBC_VERSION
 ARG UNIXODBC_VERSION
 
 # Install pyenv dependencies and required build tools
-RUN yum -y update && \
-    yum -y install gcc gcc-c++ make automake autoconf libtool bison flex \
-                   openssl11-devel zlib-devel glibc-devel tar gzip zip \
+RUN dnf -y update && \
+    dnf -y install gcc gcc-c++ make automake autoconf libtool bison flex \
+                   openssl-devel zlib-devel glibc-devel tar gzip zip \
                    patch zlib-devel bzip2 bzip2-devel readline-devel \
                    sqlite sqlite-devel tk-devel \
                    libffi-devel xz-devel git wget
@@ -18,9 +18,9 @@ RUN yum -y update && \
 RUN curl https://pyenv.run | bash
 
 # Set up environment for pyenv
-ENV HOME /root
-ENV PYENV_ROOT $HOME/.pyenv
-ENV PATH $PYENV_ROOT/bin:$PATH
+ENV HOME=/root
+ENV PYENV_ROOT=$HOME/.pyenv
+ENV PATH=$PYENV_ROOT/bin:$PATH
 RUN echo 'eval "$(pyenv init --path)"' >> $HOME/.bashrc
 
 # Download and build unixODBC
@@ -34,17 +34,17 @@ RUN curl ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-${UNIXODBC_VERSION}.tar.gz
 # Conditional ODBC Driver Installation Logic
 RUN if [[ "${MSODBC_VERSION}" == "18" || "${MSODBC_VERSION}" == "17" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
-        ACCEPT_EULA=Y yum install -y msodbcsql${MSODBC_VERSION}; \
+        ACCEPT_EULA=Y dnf install -y msodbcsql${MSODBC_VERSION}; \
     elif [[ "${MSODBC_VERSION}" == "13.1" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
         wget https://linuxsoft.cern.ch/cern/centos/7/updates/x86_64/Packages/openssl-libs-1.0.2k-26.el7_9.x86_64.rpm && \
         rpm -ivh openssl-libs-1.0.2k-26.el7_9.x86_64.rpm --force && \
-        ACCEPT_EULA=Y yum  install -y msodbcsql; \
+        ACCEPT_EULA=Y dnf  install -y msodbcsql; \
     elif [[ "${MSODBC_VERSION}" == "13" ]]; then \
         curl https://packages.microsoft.com/config/rhel/7/prod.repo | tee /etc/yum.repos.d/mssql-release.repo && \
         wget https://linuxsoft.cern.ch/cern/centos/7/updates/x86_64/Packages/openssl-libs-1.0.2k-26.el7_9.x86_64.rpm && \
         rpm -ivh openssl-libs-1.0.2k-26.el7_9.x86_64.rpm --force && \
-        ACCEPT_EULA=Y yum install -y msodbcsql-13.0.1.0-1; \
+        ACCEPT_EULA=Y dnf install -y msodbcsql-13.0.1.0-1; \
     else \
         echo "Unsupported ODBC version"; \
         exit 1; \
