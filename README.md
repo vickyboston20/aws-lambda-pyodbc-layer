@@ -47,7 +47,7 @@ The GitHub Actions workflow [build.yml](.github/workflows/build.yml) builds the 
 
 ### Updating Python Versions for Build
 
-  In the [build.yml](.github/workflows/build.yml#L32), Python versions can be modified under the build job by adjusting the  ```--build-arg PYTHON_VERSIONS="3.12,3.11"```.
+  In the [al2 build.yml](https://github.com/vickyboston20/aws-lambda-pyodbc-layer/blob/v1.1.0/.github/workflows/build.yml#L35) and [al2023 build.yml](https://github.com/vickyboston20/aws-lambda-pyodbc-layer/blob/v1.1.0/.github/workflows/build.yml#L44), Python versions can be modified under the build job by adjusting the  ```--build-arg PYTHON_VERSIONS="3.12,3.11"```.
 
 ## How to Build Locally
 
@@ -92,7 +92,7 @@ To build the Lambda layers locally, you can follow these steps:
 
 ## How to Test
 
-If you want to test the Lambda layers, simply push your code to the relevant branch in the repository. The CI pipeline will automatically handle building and testing the Lambda layers based on the configuration in the build.yml file.
+If you want to test the Lambda layers, simply push your code to the relevant branch `feature\{branchname}` in the repository. The CI pipeline will automatically handle building and testing the Lambda layers based on the configuration in the build.yml file.
 
 ## Roadmap
 
@@ -110,7 +110,7 @@ If you want to test the Lambda layers, simply push your code to the relevant bra
 
 ## License
 
-This project is licensed under the [MIT](LICENSE). Feel free to use, modify, and distribute this project under the terms of the license.
+This project is licensed under the [MIT](https://github.com/vickyboston20/aws-lambda-pyodbc-layer/blob/v1.1.0/.github/workflows/LICENSE). Feel free to use, modify, and distribute this project under the terms of the license.
 
 ## Contributions
 

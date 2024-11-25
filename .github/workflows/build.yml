@@ -31,6 +31,7 @@ jobs:
       - name: Build Docker al2 image for AWS Lambda layer
         run: |
           docker build -f Dockerfile-al2\
+            --platform linux/amd64 \
             --build-arg PYTHON_VERSIONS="3.9,3.10,3.11,3.12" \
             --build-arg MSODBC_VERSION=${{ matrix.msodbc_version }} \
             --build-arg UNIXODBC_VERSION=${{ matrix.unixodbc_version }} \
@@ -39,6 +40,7 @@ jobs:
       - name: Build Docker al2023 image for AWS Lambda layer
         run: |
           docker build -f Dockerfile-al2023\
+            --platform linux/amd64 \
             --build-arg PYTHON_VERSIONS="3.13" \
             --build-arg MSODBC_VERSION=${{ matrix.msodbc_version }} \
             --build-arg UNIXODBC_VERSION=${{ matrix.unixodbc_version }} \
@@ -70,7 +72,7 @@ jobs:
 
     strategy:
       matrix:
-        python_version: ["3.9", "3.10", "3.11", "3.12"]
+        python_version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         msodbc_version: ["17", "18"]
         unixodbc_version: ["2.3.12"]
 
@@ -164,25 +166,26 @@ jobs:
           body: |
             # AWS Lambda Layer Release - PyODBC for MSSQL
 
-            We are excited to announce the release of the AWS Lambda layer artifacts that provide seamless connectivity to Microsoft SQL Server databases using the [pyodbc](https://pypi.org/project/pyodbc) library.
+            We are excited to announce the latest release of AWS Lambda layer artifacts, enabling seamless integration with Microsoft SQL Server databases using the pyodbc library.
 
-            This release includes version-specific zip files tailored for various combinations of Python versions, Microsoft ODBC driver versions, and UNIXODBC versions. You can use these artifacts to easily integrate SQL Server connectivity into your AWS Lambda functions without the hassle of manual configuration.
+            This release was inspired by the initial contributions of [MMeffert](https://github.com/MMeffert), whose work laid the foundation for this update. While the original [PR](https://github.com/vickyboston20/aws-lambda-pyodbc-layer/pull/1) provided support for Python 3.13 with Amazon Linux latest, this release resolves compatibility issues with other Python versions, ensuring they work seamlessly with Amazon Linux 2.
 
-            ### Available packages for this release:
+            ## Key Features:
 
-              - **pyodbc-layer-3.9-mssql18-unixODBC2.3.12.zip**: For Python 3.9 with Microsoft ODBC Driver 18 and UNIXODBC 2.3.12.
-              - **pyodbc-layer-3.9-mssql17-unixODBC2.3.12.zip**: For Python 3.9 with Microsoft ODBC Driver 17 and UNIXODBC 2.3.12.
-              - **pyodbc-layer-3.10-mssql18-unixODBC2.3.12.zip**: For Python 3.10 with Microsoft ODBC Driver 18 and UNIXODBC 2.3.12.
-              - **pyodbc-layer-3.10-mssql17-unixODBC2.3.12.zip**: For Python 3.10 with Microsoft ODBC Driver 17 and UNIXODBC 2.3.12.
-              - **pyodbc-layer-3.11-mssql18-unixODBC2.3.12.zip**: For Python 3.11 with Microsoft ODBC Driver 18 and UNIXODBC 2.3.12.
-              - **pyodbc-layer-3.11-mssql17-unixODBC2.3.12.zip**: For Python 3.11 with Microsoft ODBC Driver 17 and UNIXODBC 2.3.12.
-              - **pyodbc-layer-3.12-mssql18-unixODBC2.3.12.zip**: For Python 3.12 with Microsoft ODBC Driver 18 and UNIXODBC 2.3.12.
-              - **pyodbc-layer-3.12-mssql17-unixODBC2.3.12.zip**: For Python 3.12 with Microsoft ODBC Driver 17 and UNIXODBC 2.3.12.
+            ### Comprehensive Python Support:
+             - Python 3.9 to 3.12 now fully compatible with Amazon Linux 2.
+             - Python 3.13 support retained for Amazon Linux latest.
 
-            ### Key Features:
-            - **Automated CI/CD**: Our GitHub Actions CI/CD pipeline ensures that the latest Lambda layer artifacts are consistently built, tested, and released whenever new versions are pushed.
-            - **Effortless Integration**: Simply download the pre-built zip files from the GitHub releases section and attach them to your AWS Lambda functions.
+            ### Enhanced ODBC Options:
+              Compatibility with both Microsoft ODBC Driver 17/18 and UNIXODBC 2.3.12.
 
-            To get started, refer to the [Usage](README.md#usage) section in the README for detailed steps on downloading and integrating the layers into your Lambda functions.
+            ### Available Packages:
+             - Python 3.9 to 3.13 combinations for MSSQL18/17 with UNIXODBC2.3.12.
+             - Pre-built zip files for easy integration into AWS Lambda functions.
 
-            Thank you for using our AWS Lambda layers for PyODBC with Microsoft SQL Server. We look forward to supporting your serverless applications!
+            ### Automation and CI/CD:
+              A robust GitHub Actions pipeline ensures reliable builds and updates with every release.
+
+              For detailed instructions on integration, refer to the [Usage](https://github.com/vickyboston20/aws-lambda-pyodbc-layer/blob/v1.1.0/README.md#usage) section in the README.
+
+              Thank you for choosing our AWS Lambda layers for PyODBC and Microsoft SQL Server connectivity!
