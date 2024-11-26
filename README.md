@@ -11,7 +11,7 @@ Currently, this project supports only x86_64 architecture. Future updates will i
 ## Features
 
 - **Version-Specific Artifacts**: Lambda layers are built for specific combinations of:
-  - **Python versions**: ```3.9```, ```3.10```,```3.11```, ```3.12``` (using [pyenv](https://github.com/pyenv/pyenv))
+  - **Python versions**: ```3.9```, ```3.10```,```3.11```, ```3.12```, ```3.13``` (using [pyenv](https://github.com/pyenv/pyenv))
   - **Microsoft ODBC driver versions**: ```17```, ```18```(using [Microsoft ODBC driver versions](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server))
   - **UNIXODBC versions**: ```2.3.12``` (with support for [multiple ODBC versions](https://www.unixodbc.org/download.html))
 
@@ -47,7 +47,7 @@ The GitHub Actions workflow [build.yml](.github/workflows/build.yml) builds the 
 
 ### Updating Python Versions for Build
 
-  In the [build.yml](.github/workflows/build.yml#L32), Python versions can be modified under the build job by adjusting the  ```--build-arg PYTHON_VERSIONS="3.12,3.11"```.
+  In the [al2 build.yml](https://github.com/vickyboston20/aws-lambda-pyodbc-layer/blob/v1.1.0/.github/workflows/build.yml#L35) and [al2023 build.yml](https://github.com/vickyboston20/aws-lambda-pyodbc-layer/blob/v1.1.0/.github/workflows/build.yml#L44), Python versions can be modified under the build job by adjusting the  ```--build-arg PYTHON_VERSIONS="3.12,3.11"```.
 
 ## How to Build Locally
 
@@ -57,31 +57,46 @@ To build the Lambda layers locally, you can follow these steps:
 2. Install Docker if you haven’t already.
 3. Run the following command to build the image and create the Lambda layer artifacts:
 
+    - Build Docker Image using amazonlinux 2
+
     ```bash
-    docker build \
+    docker build -f Dockerfile-al2\
       --build-arg PYTHON_VERSIONS="3.12,3.11,3.10,3.9" \
       --build-arg MSODBC_VERSION=18 \
       --build-arg UNIXODBC_VERSION=2.3.12 \
-      -t pyodbc-lambda-layer:multi-python .
+      -t pyodbc-lambda-layer:multi-python-al2 .
+    ```
+
+    - Build Docker Image using amazonlinux 2023
+
+    ```bash
+    docker build -f Dockerfile-al2\
+      --build-arg PYTHON_VERSIONS="3.12,3.11,3.10,3.9" \
+      --build-arg MSODBC_VERSION=18 \
+      --build-arg UNIXODBC_VERSION=2.3.12 \
+      -t pyodbc-lambda-layer:multi-python-al2023 .
     ```
 
 4. Extract the zip files from the Docker container:
 
     ```bash
-    CONTAINER_ID=$(docker create pyodbc-lambda-layer:multi-python)
-    docker cp $CONTAINER_ID:/opt/artifacts/. .
-    docker rm $CONTAINER_ID
+    CONTAINER_AL2_ID=$(docker create pyodbc-lambda-layer:multi-python-al2)
+    CONTAINER_AL2023_ID=$(docker create pyodbc-lambda-layer:multi-python-al2023)
+    docker cp $CONTAINER_AL2_ID:/opt/artifacts/. .
+    docker cp $CONTAINER_AL2023_ID:/opt/artifacts/. .
+    docker rm $CONTAINER_AL2_ID
+    docker rm $CONTAINER_AL2023_ID
     ```
 
 5. The zip files will be available in the current directory for you to use.
 
 ## How to Test
 
-If you want to test the Lambda layers, simply push your code to the relevant branch in the repository. The CI pipeline will automatically handle building and testing the Lambda layers based on the configuration in the build.yml file.
+If you want to test the Lambda layers, simply push your code to the relevant branch `feature\{branchname}` in the repository. The CI pipeline will automatically handle building and testing the Lambda layers based on the configuration in the build.yml file.
 
 ## Roadmap
 
-- **Current Support**: The layers support the x86_64 architecture for Python ```3.9```, ```3.10```, ```3.11```, ```3.12``` with Microsoft ODBC Driver versions ```17``` and ```18```, and UNIXODBC ```2.3.12```.
+- **Current Support**: The layers support the x86_64 architecture for Python ```3.9```, ```3.10```, ```3.11```, ```3.12```, ```3.13``` with Microsoft ODBC Driver versions ```17``` and ```18```, and UNIXODBC ```2.3.12```.
 - **Future Updates**:
   - **ARM64 Support**: In future releases, support for the arm64 architecture will be added, allowing for broader compatibility across different AWS Lambda runtime environments.
 
@@ -95,7 +110,7 @@ If you want to test the Lambda layers, simply push your code to the relevant bra
 
 ## License
 
-This project is licensed under the [MIT](LICENSE). Feel free to use, modify, and distribute this project under the terms of the license.
+This project is licensed under the [MIT](https://github.com/vickyboston20/aws-lambda-pyodbc-layer/blob/v1.1.0/.github/workflows/LICENSE). Feel free to use, modify, and distribute this project under the terms of the license.
 
 ## Contributions
 
